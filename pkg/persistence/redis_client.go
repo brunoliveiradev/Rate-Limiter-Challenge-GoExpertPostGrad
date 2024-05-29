@@ -61,8 +61,8 @@ func (r *RedisClient) Expire(ctx context.Context, key string, ttl int) error {
 }
 
 // Set sets a key in Redis with an initial value and TTL.
-func (r *RedisClient) Set(ctx context.Context, key string, ttl int) error {
-	err := r.client.Set(ctx, key, "0", time.Duration(ttl)*time.Second).Err()
+func (r *RedisClient) Set(ctx context.Context, key string, value int, ttl int) error {
+	err := r.client.Set(ctx, key, value, time.Duration(ttl)*time.Second).Err()
 	if err != nil {
 		return err
 	}
