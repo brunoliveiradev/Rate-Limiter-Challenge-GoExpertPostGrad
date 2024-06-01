@@ -2,13 +2,13 @@ package persistence
 
 import (
 	"context"
-	"time"
 )
 
 type StoragePersistenceClient interface {
-	Set(ctx context.Context, key string, ttl time.Duration) error
-	Get(ctx context.Context, key string) (int, error)
-	Increment(ctx context.Context, key string, ttl time.Duration) (int, error)
+	Set(ctx context.Context, key string, value string, ttl int) error
+	Get(ctx context.Context, key string) (string, error)
+	Increment(ctx context.Context, key string, ttl int) (int, error)
 	Exists(ctx context.Context, key string) (bool, error)
-	IsBlocked(ctx context.Context, key string) (bool, error)
+	IsKeyBlocked(ctx context.Context, key string) (bool, error)
+	FlushAll(ctx context.Context) error
 }
