@@ -9,14 +9,20 @@ import (
 )
 
 func NewRouter(rateLimiter *limiter.Limiter) *chi.Mux {
+	rateLimiterMiddleware := middleware.NewRateLimiterMiddleware(rateLimiter)
+
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.Logger)
-	r.Use(middleware.NewRateLimiterMiddleware(rateLimiter).Limit)
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rateLimiterMiddleware.Limit(next.ServeHTTP).ServeHTTP(w, r)
+		})
+	})
 	r.Use(chiMiddleware.Recoverer)
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Rate Limiter Challenge"))
+		w.Write([]byte("OK!"))
 	})
 	return r
 }
