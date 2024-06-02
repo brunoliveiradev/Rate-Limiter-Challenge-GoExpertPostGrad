@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Rate-Limiter-Challenge-GoExpertPostGrad/internal/configs"
 	"Rate-Limiter-Challenge-GoExpertPostGrad/internal/limiter"
 	"Rate-Limiter-Challenge-GoExpertPostGrad/internal/middleware"
 	"Rate-Limiter-Challenge-GoExpertPostGrad/pkg/persistence"
@@ -26,9 +27,23 @@ func cleanRedis() {
 	redisClient.FlushAll(context.Background())
 }
 
+func loadConfig() *configs.Config {
+	return &configs.Config{
+		ServerPort:        8080,
+		RedisAddr:         "localhost:6379",
+		RedisPassword:     "",
+		RedisDB:           0,
+		RateLimitByIP:     2,
+		RateLimiteByToken: 10,
+		Tokens:            []string{"token1", "token2", "token3"},
+		Ttl:               5,
+	}
+}
+
 func TestValidTokenWithinLimit(t *testing.T) {
 	cleanRedis()
-	rateLimiter := limiter.NewLimiter(redisClient, 2, 10, 5, []string{"token1", "token2", "token3"})
+	conf := loadConfig()
+	rateLimiter := limiter.NewLimiter(redisClient, conf)
 	mw := middleware.NewRateLimiterMiddleware(rateLimiter)
 
 	for i := 0; i < 10; i++ {
@@ -50,7 +65,8 @@ func TestValidTokenWithinLimit(t *testing.T) {
 
 func TestValidTokenExceedingLimit(t *testing.T) {
 	cleanRedis()
-	rateLimiter := limiter.NewLimiter(redisClient, 2, 10, 5, []string{"token1", "token2", "token3"})
+	conf := loadConfig()
+	rateLimiter := limiter.NewLimiter(redisClient, conf)
 	mw := middleware.NewRateLimiterMiddleware(rateLimiter)
 
 	for i := 0; i < 11; i++ {
@@ -76,7 +92,8 @@ func TestValidTokenExceedingLimit(t *testing.T) {
 
 func TestInvalidTokenWithinLimit(t *testing.T) {
 	cleanRedis()
-	rateLimiter := limiter.NewLimiter(redisClient, 2, 10, 5, []string{"token1", "token2", "token3"})
+	conf := loadConfig()
+	rateLimiter := limiter.NewLimiter(redisClient, conf)
 	mw := middleware.NewRateLimiterMiddleware(rateLimiter)
 
 	for i := 0; i < 2; i++ {
@@ -98,7 +115,8 @@ func TestInvalidTokenWithinLimit(t *testing.T) {
 
 func TestInvalidTokenExceedingLimit(t *testing.T) {
 	cleanRedis()
-	rateLimiter := limiter.NewLimiter(redisClient, 2, 10, 5, []string{"token1", "token2", "token3"})
+	conf := loadConfig()
+	rateLimiter := limiter.NewLimiter(redisClient, conf)
 	mw := middleware.NewRateLimiterMiddleware(rateLimiter)
 
 	for i := 0; i < 3; i++ {
@@ -124,7 +142,8 @@ func TestInvalidTokenExceedingLimit(t *testing.T) {
 
 func TestNoTokenWithinLimit(t *testing.T) {
 	cleanRedis()
-	rateLimiter := limiter.NewLimiter(redisClient, 2, 10, 5, []string{"token1", "token2", "token3"})
+	conf := loadConfig()
+	rateLimiter := limiter.NewLimiter(redisClient, conf)
 	mw := middleware.NewRateLimiterMiddleware(rateLimiter)
 
 	for i := 0; i < 2; i++ {
@@ -145,7 +164,8 @@ func TestNoTokenWithinLimit(t *testing.T) {
 
 func TestNoTokenExceedingLimit(t *testing.T) {
 	cleanRedis()
-	rateLimiter := limiter.NewLimiter(redisClient, 2, 10, 5, []string{"token1", "token2", "token3"})
+	conf := loadConfig()
+	rateLimiter := limiter.NewLimiter(redisClient, conf)
 	mw := middleware.NewRateLimiterMiddleware(rateLimiter)
 
 	for i := 0; i < 3; i++ {

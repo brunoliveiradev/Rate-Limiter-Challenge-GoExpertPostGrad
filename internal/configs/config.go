@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"encoding/json"
 	"github.com/spf13/viper"
 )
 
@@ -23,6 +24,11 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
+	var tokens []string
+	if err := json.Unmarshal([]byte(viper.GetString("ALLOWED_TOKENS")), &tokens); err != nil {
+		return nil, err
+	}
+
 	config := &Config{
 		ServerPort:        viper.GetInt("SERVER_PORT"),
 		RedisAddr:         viper.GetString("REDIS_SERVER_ADDRESS"),
@@ -30,9 +36,8 @@ func LoadConfig() (*Config, error) {
 		RedisDB:           viper.GetInt("REDIS_DB"),
 		RateLimitByIP:     viper.GetInt("RATE_LIMIT_BY_IP"),
 		RateLimiteByToken: viper.GetInt("RATE_LIMIT_BY_TOKEN"),
-		Tokens:            viper.GetStringSlice("ALLOWED_TOKENS"),
+		Tokens:            tokens,
 		Ttl:               viper.GetInt("TTL_SECONDS"),
 	}
-
 	return config, nil
 }
