@@ -17,7 +17,7 @@ func main() {
 	}
 
 	redisClient := persistence.NewRedisClient(config.RedisAddr, config.RedisPassword, config.RedisDB)
-	rateLimiter := limiter.NewLimiter(redisClient, config.RateLimitByIP, config.RateLimiteByToken, config.Ttl, config.Tokens)
+	rateLimiter := limiter.NewLimiter(redisClient, config)
 
 	r := router.NewRouter(rateLimiter)
 

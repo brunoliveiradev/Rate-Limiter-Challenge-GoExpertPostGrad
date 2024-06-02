@@ -8,7 +8,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strings"
 )
 
 type RateLimiterMiddleware struct {
@@ -22,7 +21,7 @@ func NewRateLimiterMiddleware(l ratelimiter.LimiterInterface) *RateLimiterMiddle
 func (rl *RateLimiterMiddleware) Limit(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.Background()
-		token := strings.TrimSpace(r.Header.Get("API_KEY"))
+		token := r.Header.Get("API_KEY")
 		ip := getClientIP(r)
 
 		err := rl.limiter.RateLimited(ctx, ip, token)
