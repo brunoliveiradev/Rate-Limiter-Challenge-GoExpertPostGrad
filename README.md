@@ -44,7 +44,7 @@ Você precisará das seguintes tecnologias abaixo:
     go run main.go
     ```
 
-4. A **API REST** estará disponível em `http://localhost:8000` 🚀.
+4. A **API REST** estará disponível em `http://localhost:8080` 🚀.
 
 ## 🧪 Testes
 
@@ -111,7 +111,7 @@ You will need the following technologies below:
     ```sh
     go run main.go
     ```
-4. The **REST API** will be available at `http://localhost:8000` 🚀.
+4. The **REST API** will be available at `http://localhost:8080` 🚀.
 
 ## 🧪 Tests
 
