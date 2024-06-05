@@ -1,4 +1,31 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rate_limiter_api
+    environment:
+      SERVER_PORT: "8080"
+      REDIS_SERVER_ADDRESS: redis:6379
+      REDIS_SERVER_PASSWORD: ${REDIS_SERVER_PASSWORD}
+      REDIS_DB: ${REDIS_DB}
+      RATE_LIMIT_BY_IP: ${RATE_LIMIT_BY_IP}
+      RATE_LIMIT_BY_TOKEN: ${RATE_LIMIT_BY_TOKEN}
+      ALLOWED_TOKENS: ${ALLOWED_TOKENS}
+      TTL_SECONDS: ${TTL_SECONDS}
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    env_file:
+      - ./.env
+
   redis:
     image: redis:alpine
     container_name: redis
@@ -9,3 +36,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    env_file:
+      - ./.env
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
+    driver: local

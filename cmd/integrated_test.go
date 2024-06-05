@@ -27,16 +27,16 @@ func cleanRedis() {
 	redisClient.FlushAll(context.Background())
 }
 
-func loadConfig() *configs.Config {
-	return &configs.Config{
-		ServerPort:        8080,
-		RedisAddr:         "localhost:6379",
-		RedisPassword:     "",
-		RedisDB:           0,
-		RateLimitByIP:     2,
-		RateLimiteByToken: 10,
-		Tokens:            []string{"token1", "token2", "token3"},
-		Ttl:               5,
+func loadConfig() *configs.Envs {
+	return &configs.Envs{
+		ServerPort:       "8080",
+		RedisServerAddr:  "localhost:6379",
+		RedisServerPwd:   "",
+		RedisDB:          0,
+		RateLimitByIP:    2,
+		RateLimitByToken: 10,
+		AllowedTokens:    []string{"token1", "token2", "token3"},
+		TTLSeconds:       5,
 	}
 }
 

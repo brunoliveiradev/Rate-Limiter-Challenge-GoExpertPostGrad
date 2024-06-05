@@ -10,15 +10,15 @@ import (
 var ErrNotAllowed = errors.New("access not allowed")
 
 type Limiter struct {
-	config        *configs.Config
+	config        *configs.Envs
 	redis         *persistence.RedisClient
 	allowedTokens map[string]bool
 }
 
-func NewLimiter(redis *persistence.RedisClient, config *configs.Config) *Limiter {
+func NewLimiter(redis *persistence.RedisClient, config *configs.Envs) *Limiter {
 	// This map will allow for faster lookups when checking if a token is allowed instead of iterating over the slice of tokens.
 	allowedTokens := make(map[string]bool)
-	for _, token := range config.Tokens {
+	for _, token := range config.AllowedTokens {
 		allowedTokens[token] = true
 	}
 
@@ -38,14 +38,14 @@ func (rl *Limiter) RateLimited(ctx context.Context, ip string, token string) err
 		return ErrNotAllowed
 	}
 
-	counter, err := rl.redis.Increment(ctx, key, rl.config.Ttl)
+	counter, err := rl.redis.Increment(ctx, key, rl.config.TTLSeconds)
 	if err != nil {
 		return err
 	}
 
 	if counter > maxRequests {
 		blockKey := key + ":blocked"
-		err = rl.redis.Set(ctx, blockKey, "1", rl.config.Ttl)
+		err = rl.redis.Set(ctx, blockKey, "1", rl.config.TTLSeconds)
 		if err != nil {
 			return err
 		}
@@ -57,7 +57,7 @@ func (rl *Limiter) RateLimited(ctx context.Context, ip string, token string) err
 
 func (rl *Limiter) determineRateLimitKeyAndValue(token string, ip string) (string, int) {
 	if token != "" && rl.isAllowedToken(token) {
-		return token, rl.config.RateLimiteByToken
+		return token, rl.config.RateLimitByToken
 	}
 	return ip, rl.config.RateLimitByIP
 }

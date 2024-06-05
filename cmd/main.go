@@ -16,11 +16,11 @@ func main() {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	redisClient := persistence.NewRedisClient(config.RedisAddr, config.RedisPassword, config.RedisDB)
+	redisClient := persistence.NewRedisClient(config.RedisServerAddr, config.RedisServerPwd, config.RedisDB)
 	rateLimiter := limiter.NewLimiter(redisClient, config)
 
 	r := router.NewRouter(rateLimiter)
 
-	log.Printf("Server starting on port %d", config.ServerPort)
-	http.ListenAndServe(fmt.Sprintf(":%d", config.ServerPort), r)
+	log.Printf("Server starting on port %s", config.ServerPort)
+	http.ListenAndServe(fmt.Sprintf(":%s", config.ServerPort), r)
 }

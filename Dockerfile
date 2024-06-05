@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine as builder
+FROM golang:latest as builder
 
 LABEL authors="brunooliveira"
 
