@@ -1,4 +1,4 @@
-### Languages: [Português 🇧🇷](#Rate-Limiter) | [English 🇨🇦](#rate-limiter-api)
+### Languages: [Português 🇧🇷](#Rate-Limiter) | [English 🇺🇸](#rate-limiter-api)
 
 ---
 
